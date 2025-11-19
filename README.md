@@ -1,152 +1,375 @@
 # Source-Code-Management-Project-3
 
-Task 1 – Evaluate SCM Tools
-Deliverable: Report skeleton (markdown)
+Below is a **clean, professional, fully organized documentation** version of the entire Critical Thinking Project. You can submit this as your final report or present it to your team. If you want it exported as **PDF, DOCX, or Markdown**, just tell me.
 
-1.1 Centralized vs. Distributed
-| Feature                | Centralized (SVN)                     | Distributed (Git)                     |
-|------------------------|----------------------------------------|----------------------------------------|
-| Repository model   | Single server, clients pull/checkout   | Every clone is a full repo              |
-| Network dependency| Must talk to server for most actions   | Offline work; only push/pull needs net   |
-| Branching cost     | Heavy, creates server-side folders      | Light, instant branch/merge             |
-| Merge strategy     | File-level lock or manual merge         | Automatic 3-way merge; conflict-aware   |
-| Speed              | Slower for large histories             | Fast (local history, cheap diffs)       |
-| Access control     | Central ACLs, easier enforcement       | Distributed; can enforce via hooks/PRs   |
+---
 
-1.2 Why Git for Distributed Teams
-- Local dev & offline work – devs can commit, branch, experiment anywhere.
-- Fast collaboration – Push/pull to remote, no single point of failure.
-- Rich ecosystem – GitHub, GitLab, Bitbucket, CI/CD integrations.
-- Built-in code review – Pull/Merge Requests + status checks.
+# **Source Code Management for a Distributed Development Team**
 
-1.3 Challenges & Mitigation
-- Learning curve – Provide training, internal cheat sheets.
-- Repo size – Use shallow clones, LFS for binaries.
-- Security – Enforce SSH keys, GPG signing, branch protection.
+### **Critical Thinking Project Documentation**
 
-Task 2 – Git Workflow Guide
-2.1 Branching Model (Git Flow + PR)
+---
 
-main → production
-develop → integration
-feature/* → new features
-hotfix/* → urgent fixes
-release/* → pre-prod staging
+## **Table of Contents**
 
+1. **Introduction**
+2. **Task 1: Evaluation of SCM Tools**
 
-2.2 Typical Flow
-1. Create feature
+   * Centralized vs Distributed VCS
+   * Advantages of Git
+   * Challenges & Recommendation
+3. **Task 2: Git Workflow for a Distributed Team**
 
-bash
-git checkout develop
-git pull
-git checkout -b feature/login-api
+   * Branching Strategy
+   * Pull Requests & Reviews
+   * Merging & Rebasing Best Practices
+4. **Task 3: CI/CD Integration Using GitHub Actions**
 
-2. Work, commit, push
+   * Pipeline Overview
+   * Example Workflow File
+5. **Task 4: Security Best Practices in Git**
 
-bash
-git add .
-git commit -m "feat: add login endpoint"
-git push -u origin feature/login-api
+   * Access Control
+   * Commit Signing
+   * Branch Protection
+6. **Task 5: Real-World Merge Conflict Resolution**
 
-3. Open PR → Assign reviewer, add PR template.
-4. CI checks (see Task 3) → Must pass lint, test, build.
-5. Merge → Squash & merge into develop, delete branch.
+   * Steps to Resolve
+   * Prevention Strategies
+7. **Conclusion**
 
-2.3 Best Practices
-- Small, focused PRs (<200 LOC).
-- Rebase before PR to keep history clean.
-- Delete merged branches to avoid clutter.
+---
 
-Task 3 – CI/CD Pipeline (GitHub Actions)
+# **1. Introduction**
 
-name: CI/CD Pipeline
+As the development team transitions from a centralized environment into a distributed one, the need for a scalable and modern Source Code Management (SCM) solution becomes critical. This documentation outlines an evaluation of SCM tools, implements a Git-based workflow, integrates CI/CD automation, enforces repository security, and addresses real-world challenges such as merge conflicts. The goal is to ensure that the distributed team can collaborate efficiently, securely, and with consistent code quality.
+
+---
+
+# **2. Task 1: Evaluation of SCM Tools**
+
+## **Centralized vs Distributed Version Control**
+
+### **Centralized VCS (e.g., SVN)**
+
+* A single, central repository where all developers push and pull code.
+* Requires a stable network connection for most operations.
+* Simpler to understand but introduces bottlenecks and a single point of failure.
+
+### **Distributed VCS (e.g., Git)**
+
+* Every developer has a complete local copy of the repository.
+* Offline-friendly: commits, diffs, and logs run locally.
+* Flexible, fast branching and merging.
+* Compatible with modern automation and cloud workflows.
+
+---
+
+## **Advantages of Git for a Distributed Team**
+
+* Faster local operations improve productivity.
+* Branching and merging are efficient, enabling feature-branch workflows.
+* No single point of failure—every clone is a full backup.
+* Strong ecosystem: GitHub, GitLab, Bitbucket, CI/CD, DevSecOps tooling.
+
+---
+
+## **Challenges of Using Git**
+
+* Steeper learning curve than SVN.
+* Requires workflow discipline (e.g., understanding rebase and branching).
+* Large binary files need Git LFS.
+
+---
+
+## **Recommendation**
+
+Git is the best choice for distributed teams due to its speed, flexibility, resilience, and compatibility with modern CI/CD and DevOps practices. Migrating from SVN to Git will significantly improve collaboration and automation capabilities across geographically distributed developers.
+
+---
+
+# **3. Task 2: Git Workflow for a Distributed Team**
+
+## **Branching Strategy**
+
+A hybrid workflow is recommended:
+
+### **Main Branches**
+
+* **`main`** – Always stable, production-ready. Protected.
+* **`develop`** (optional) – Integration branch for upcoming releases.
+
+### **Supporting Branches**
+
+* **`feature/<name>`** – One feature per branch. Short-lived.
+* **`hotfix/<issue>`** – Urgent production fixes.
+* **`release/<version>`** – Used if following formal releases.
+
+---
+
+## **Pull Requests (PRs) and Code Reviews**
+
+Each feature branch must go through the following:
+
+1. Push the feature branch to the remote.
+2. Open a **Pull Request** into `main` (or `develop`).
+3. PR must include:
+
+   * Summary of changes
+   * Linked issue/ticket
+   * Testing instructions
+4. The PR should pass:
+
+   * Reviewer approval
+   * CI tests (linting, unit tests, build)
+5. Merge into target branch only when CI and reviews are complete.
+
+---
+
+## **Best Practices for Merging & Rebasing**
+
+* Keep branches small and short-lived.
+* Rebase feature branches frequently to reduce conflicts:
+
+  ```
+  git fetch origin
+  git rebase origin/main
+  ```
+* Use **force-with-lease** instead of force push:
+
+  ```
+  git push --force-with-lease
+  ```
+* Avoid rebasing shared branches after others have pulled them.
+
+---
+
+# **4. Task 3: Automating Code Quality and Deployment**
+
+## **CI/CD Pipeline Overview**
+
+Using GitHub Actions, enforce automated testing and deployment:
+
+* When developers push or open a PR:
+
+  * Linting runs
+  * Unit tests execute
+  * Test results are stored
+* When code merges into `main`:
+
+  * Build process starts
+  * Application is containerized
+  * Deployed to a staging environment
+
+---
+
+## **Example GitHub Actions Workflow**
+
+Create a file:
+
+### **`.github/workflows/ci-cd.yml`**
+
+```yaml
+name: CI / CD
+
 on:
   push:
-    branches: [ feature/*, hotfix/* ]
+    branches: [ main, develop, 'release/*' ]
   pull_request:
-    branches: [ develop, main ]
+    branches: [ main, develop ]
 
 jobs:
-  build:
+  lint-and-test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v2
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: '16'
-      - name: Install deps
+          node-version: '20'
+
+      - name: Install dependencies
         run: npm ci
+
       - name: Lint
         run: npm run lint
-      - name: Test
-        run: npm test -- --coverage
+
+      - name: Unit tests
+        run: npm test -- --ci --reporter=jest-junit
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: ./test-results
+
+  build-and-staging-deploy:
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/release/')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install
+        run: npm ci
+
       - name: Build
         run: npm run build
-      - name: Deploy to Staging
-        if: github.ref == 'refs/heads/develop'
-        uses: peaceiris/actions-gh-pages@v3
+
+      - name: Create Docker image
+        run: docker build -t myapp:${{ github.sha }} .
+
+      - name: Push image to registry
+        run: |
+          echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ghcr.io -u "${{ secrets.REGISTRY_USERNAME }}" --password-stdin
+          docker tag myapp:${{ github.sha }} ghcr.io/${{ github.repository_owner }}/myapp:${{ github.sha }}
+          docker push ghcr.io/${{ github.repository_owner }}/myapp:${{ github.sha }}
+
+      - name: Deploy to staging
+        uses: appleboy/ssh-action@v0.1.7
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.STAGING_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            docker pull ghcr.io/${{ github.repository_owner }}/myapp:${{ github.sha }}
+            docker stop myapp || true
+            docker rm myapp || true
+            docker run -d --name myapp -p 80:80 ghcr.io/${{ github.repository_owner }}/myapp:${{ github.sha }}
+```
+
+---
+
+# **5. Task 4: Security Best Practices for Distributed Teams**
+
+## **Access Controls**
+
+* Enforce role-based access (RBAC):
+
+  * Developers → feature branches only
+  * Maintainers → merge permissions
+* Use SSO or MFA for all accounts.
+
+---
+
+## **SSH Keys and Secure Authentication**
+
+* Require SSH keys for all developers.
+* Rotate keys regularly.
+* Use GitHub/GitLab secrets for CI authentication.
+
+---
+
+## **Branch Protection**
+
+Protect `main` and release branches by enabling:
+
+* Required PR approvals
+* Required CI checks
+* No direct pushes
+* No force pushes
+* Require branches to be up-to-date before merging
+
+---
+
+## **Commit Signing**
+
+Require cryptographically signed commits for traceability:
+
+```
+git config --global user.signingkey <KEYID>
+git config --global commit.gpgsign true
+```
+
+This ensures authenticity and avoids unauthorized changes.
+
+---
+
+## **Audit Logging**
+
+* Use platform audit logs to monitor:
+
+  * Permission changes
+  * CI/CD deployments
+  * Security events
+* Enable secret scanning and vulnerability detection.
+
+---
+
+# **6. Task 5: Real-World Git Challenge (Merge Conflict Resolution)**
+
+## **Scenario**
+
+Two developers accidentally introduced conflicting changes into `main`. The merge failed, and the repo is in a conflicted state.
+
+---
+
+## **Steps to Resolve Conflicts**
+
+### **1. Create a Fix Branch**
+
+```
+git fetch origin
+git checkout main
+git pull origin main
+git checkout -b fix/merge-conflict
+```
+
+### **2. Identify Conflicting Files**
+
+```
+git status
+git diff --name-only --diff-filter=U
+```
+
+### **3. Open Files and Manually Resolve**
+
+Look for:
+
+```
+<<<<<<< HEAD
+Code from main
+=======
+Code from conflicting branch
+>>>>>>> other
+```
+
+Edit and remove markers.
+
+### **4. Mark Resolved & Commit**
+
+```
+git add .
+git commit -m "Resolve merge conflict between branches"
+git push origin fix/merge-conflict
+```
+
+Open a Pull Request for review.
 
 
-How it works:
-- Trigger on every push to feature branches & PRs to develop/main.
-- Lint → Test → Build → Deploy to staging if on develop.
-- Add status badge to README.md for visibility.
 
- Task 4 – Security Best Practices
-4.1 Enable Branch Protection
-- Require PR before merging to main/develop.
-- Require status checks Settings (CI must pass).
-- Sign commits with GPG.
+## **Preventing Future Conflicts**
 
-4.2 SSH & MFA
-- Rotate SSH keys every 90 days.
-- Enforce MFA for all devs.
-
-4.3 Audit
-- Enable GitHub Audit Log → export to SIEM.
-
-4.4 Sample Command
-
-bash
-# Generate GPG key
-gpg --full-generate-key
-git config --global user.signingkey <KEY_ID>
-git config --global commit. gpgsign true
-
-Task 5 – Resolve Merge Conflict
-5.1 Demo Script
-
-bash
-# Simulate conflict
-git checkout develop
-echo "console.log('hello')" > app.js
-git commit -am "Add log"
-git checkout -b feature/bug
-echo "console.log('world')" >> app.js
-git commit -am "Add world"
-git checkout develop
-echo "console.log('hi')" >> app.js
-git commit -am "Add hi"
-git merge feature/bug  # CONFLICT!
-
-# Resolve
-git status          Shows conflict in app.js
-# Manually edit app.js → keep desired lines
-git add app.js
-git commit          # Merge commit
-
-# Prevent future
-- **Rebase before PR**: `git pull --rebase origin develop`
-- **Short-lived branches**: merge within 24h.
-- **Protected branches**: enforce CI + PR.
+* Use small, frequent PRs.
+* Communicate when editing shared files.
+* Rebase often to pull in latest changes.
+* Require PRs to be up-to-date before merging.
+* Introduce feature flags to merge early and safely.
 
 
-5.2 Prevention Checklist
-- Rebase workflow for feature branches.
-- Small PRs (max 300 lines).
-- Daily standup to flag overlapping files.
+
+# **7. Conclusion**
+
+Transitioning from a centralized SCM like SVN to a distributed solution such as Git empowers development teams to collaborate more effectively across different geographical locations. With proper branching strategies, CI/CD automation, security enforcement, and conflict-handling procedures, Git becomes a powerful tool that enhances productivity, code reliability, and software delivery speed.
+
+This documentation ensures the team has the necessary guidelines and best practices to manage code efficiently and securely in a distributed DevOps environment.
+
